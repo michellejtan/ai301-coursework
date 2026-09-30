@@ -141,7 +141,24 @@ only one run occurred. **The last score in your list must match the agreement li
 1. `--limit 5` smoke test, initial rubric draft: 3/5 agreement
 2. `--limit 5` smoke test, rubric rewritten (merged checks + reworded): 5/5 agreement
 3. Full run (no `--limit`, no `--save-run`): 19/20 agreement
-4. Full run with `--save-run eval-run.txt` (committed): 18/20 agreement — bar 18/20 PASS
+4. Full run with `--save-run eval-run.txt`: 18/20 agreement — bar 18/20 PASS
+5. `--limit 5` smoke test after fixing an enum contract violation (a live-mode
+   run had emitted `"grade": "fail (overridden by house rule)"`, outside the
+   declared `pass|fail|unclear` domain; reworded `no-recent-claim` and added
+   an explicit grade-domain rule to the verdict section): 5/5 agreement
+6. Full run with `--save-run eval-run.txt` (committed, final): 18/20
+   agreement — bar 18/20 PASS
+
+Runs 3 and 4 used the exact same rubric file, with no edit between them, yet
+agreement moved from 19/20 to 18/20: issue-01 flipped to agree, while issue-19
+and issue-20 flipped to disagree. That's pure run-to-run grading variance from
+the LLM judge, not a rubric change (worth naming so it's clear how much of
+this score reflects the rubric itself versus noise between identical runs).
+Runs 4 and 6 bracket a real rubric edit (the enum-domain fix) and landed on
+the identical 18/20 with the identical two misses, which is itself useful
+confirmation that the fix was cosmetic for eval-mode grading, exactly as
+expected, since the Path Review house rule it touches never applies outside
+live mode.
 
 **Issue analysis**
 
