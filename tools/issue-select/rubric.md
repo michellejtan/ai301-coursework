@@ -13,7 +13,7 @@
 | unassigned | The assignees list in Repo facts | No person is assigned to the issue | required |
 | no-active-pr | Linked pull requests in Repo facts, plus any pull requests mentioned in the comments | No open pull request is already trying to fix this issue | required |
 | maintainer-response | The 5-issue sample of maintainer reply times in Repo facts | At least one of those 5 issues got a reply from an Owner, Member, or Collaborator within 90 days of being opened | preferred |
-| no-recent-claim | The issue's comments and their dates | Nobody said "I'll work on this" (or similar) in the 14 days before the capture date | preferred |
+| no-recent-claim | The issue's comments and their dates | Nobody said "I'll work on this" (or similar) in the 14 days before the capture date. In live mode, a claim comment from a fellow student is exempt under the Path Review house rule: grade this check `pass` and put the override reasoning in the evidence field, not in the grade value itself | preferred |
 | good-first-issue-label | The issue's labels | The issue has a label like "good first issue" | preferred |
 | visible-adoption | The star count in Repo facts | The repo has 50 or more stars | preferred |
 
@@ -25,3 +25,8 @@ ai-policy-compatible, unassigned, and no-active-pr. If a required check
 fails, or we can't tell (`unclear`), reject the issue — `unclear` counts
 as a fail. Preferred checks never change accept/reject; they just help
 rank the issues that already passed, using the fit profile in `scope.md`.
+
+Every check's grade must be exactly `pass`, `fail`, or `unclear` — never a
+qualified variant like "fail (overridden by house rule)". Any override
+reasoning, house-rule or otherwise, belongs in that check's evidence
+string, not appended to the grade value.

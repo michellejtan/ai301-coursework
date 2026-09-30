@@ -34,5 +34,6 @@ else in the rubric applies as written.
 tools you have actually used, what you want to get better at, anything
 you want to avoid. The skill uses this only to RANK the issues your
 rubric accepts, never to change a verdict: fit cannot rescue an issue
-your rubric rejects, and cannot sink one it accepts. -->I'm most comfortable with JavaScript/Node.js — I've built full CRUD apps with Express, MongoDB/Mongoose, and EJS templating. I also have experience with Python and would welcome a well-scoped Python issue to build on that experience. I have less experience with compiled or statically typed languages such as Go, Rust, and Java, as well as large unfamiliar frameworks, so issues in those areas may require more ramp-up time.
-(Write a few sentences here.)
+your rubric rejects, and cannot sink one it accepts. -->
+
+I'm most comfortable with JavaScript/Node.js. I've built full CRUD apps with Express, MongoDB/Mongoose, and EJS templating. I also have experience with Python and would welcome a well-scoped Python issue to build on that experience. I have less experience with compiled or statically typed languages such as Go, Rust, and Java, as well as large unfamiliar frameworks, so issues in those areas may require more ramp-up time.
