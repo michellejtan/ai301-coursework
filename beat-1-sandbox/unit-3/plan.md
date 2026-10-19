@@ -58,6 +58,6 @@ The build followed the posted plan: one change to `.env.example` (added `OPENROU
 Two things differ from what I said I would do:
 
 - I listed `"openrouter"` as an option in the `LLM_PROVIDER` comment, even though the plan says I had not confirmed the app accepts that value. I did this because the issue asks the comment to stop offering only `mock` and `openai`. I still have not seen the value run, and I will say so in the PR so a maintainer can change the wording.
-- I did not run `make lint`. The project's `.venv` is not installed in my clone (`.venv/bin/ruff: No such file or directory`), and the change touches no Python files. My check was the three repro greps plus copying `.env.example` to a scratch file and grepping it for `OPENROUTER_API_KEY`.
+- I first could not run `make lint` because the project's `.venv` was not installed in my clone. I then installed it, and `make lint` passed (`All checks passed!`), as did `make typecheck` and `make test-unit`; the output is in test_evidence.md. The change touches no Python files.
 
 The posted plan comment is still true, except that it promised to word the provider comment only from what `core/config.py` defines; the `"openrouter"` option goes slightly beyond that, and I will say so in the PR rather than posting a follow-up now.
