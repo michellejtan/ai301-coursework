@@ -55,10 +55,9 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Built issue-scout with my own queries and filters, then fixed it when it favored day-old issues**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I wrote a search strategy with JavaScript and Python queries traced to my fit profile and filters that drop assigned and stale issues, keep one issue per repo and sort by fewest comments, then ran the scout. The first scan accepted all five issues, but every one was under two days old in a repo with 0 to 12 stars, because "fewest comments first" rewards brand-new issues, so I added `--created "<2026-10-17"` to both queries and removed a Go/Rust/Java drop rule that can't be checked from search results. My first rescan returned the identical top five because the scout reused cached evidence; I caught it by running the new query myself, saw none of those issues came back, and re-ran with an instruction to search fresh. The fresh scan surfaced older issues and the rubric rejected the bad ones (a repo dead since 2018, an issue with an open PR, one with four unrelated asks), so I left the rubric alone.
 
 **Unit 6: [one line on the tool work]**
 
