@@ -64,12 +64,12 @@ I added an Upstream section to my voice guide and installed the hook; its log sh
 
 **Unit 7: Installed the ship-gate, wrote a manifest of CTSM's unit tests, black and pylint, and patched the gate's issue fetch for CTSM**
 
-I installed the ship-gate (its hook test gave the expected stops on `gh pr create --help`) and wrote a manifest of CTSM's three CI checks (unit tests, black, pylint), each with the full conda path so it runs in a fresh terminal. The gate stopped twice before it passed: first because I had no local `b4b-dev` branch to compare against, which I fixed by creating one that tracks upstream, and then in pr-precheck, where `fix-addresses-issue` was `unclear` because the gate could not fetch the #1621 thread; `gh issue view` fails on CTSM with my `gh` 2.45.0, which asks GitHub for a removed Projects (classic) field. I patched `fetch_issue()` in my own installed copy of the course's `check_gate.py` (a local change to the course's tool, with a backup kept) to use explicit `--json` fields and fall back to the original code, and I tested that it returns the issue body and all three comments. After the patch the gate passed the three repo checks and all six pr-precheck checks, with my issue line ("Fixes to #1621") as the weakest pass, so I changed it to "Fixes #1621" and updated on my AI disclosure before posting, without re-running the gate. I opened the PR myself in the browser, not through Claude Code, because ekluzek pointed me to CTSM's PR #4286, which says LLMs must not submit PRs.
+I installed the ship-gate (its hook test gave the expected stops on `gh pr create --help`) and wrote a manifest of CTSM's three CI checks (unit tests, black, pylint), each with the full conda path so it runs in a fresh terminal. The gate stopped twice before it passed: first because I had no local `b4b-dev` branch to compare against, which I fixed by creating one that tracks upstream, and then in pr-precheck, where `fix-addresses-issue` was `unclear` because the gate could not fetch the #1621 thread; `gh issue view` fails on CTSM with my `gh` 2.45.0, which asks GitHub for a removed Projects (classic) field. I patched `fetch_issue()` in my own installed copy of the course's `check_gate.py` (a local change to the course's tool, with a backup kept) to use explicit `--json` fields and fall back to the original code, and I tested that it returns the issue body and all three comments. After the patch the gate passed the three repo checks and all six pr-precheck checks, with my issue line ("Fixes to #1621") as the weakest pass, so I changed it to "Fixes #1621" and reworded my AI disclosure before posting, without re-running the gate. I opened the PR myself in the browser, not through Claude Code, because ekluzek pointed me to CTSM's PR #4286, which says LLMs must not submit PRs.
 
-**Unit 8: [one line on the tool work]**
+**Unit 8: Installed the PR monitor and wrote a playbook from CTSM's real reply times; its first run drafted a wait note I did not send**
 
-[2-4 sentences: the PR-monitor and your playbook. What it read, what it
-drafted, what you did with the draft.]
+I installed the PR monitor and wrote my playbook from data: five recent merged CTSM PRs from outside authors got a first maintainer reply after 20.9, 0.5, 28.3, 0.8 and 0.8 days, so my rules are one nudge after 14 quiet days and closing my PR after six more weeks of silence. When I ran it on PR #4310, about five hours old with no comments, it drafted a wait note ("0 of 14 days", threshold reached 2026-11-23) and no nudge. I did not post because it was just a a wait note is for me, not something to put on the PR. 
+It fell short in two ways: (1) it reported "1 check pending" when GitHub shows three CI workflows with `action_required`, which means a maintainer has to approve a first-time contributor's run and is not a failure, and (2) its draft told me to post through Claude Code, which CTSM's PR #4286 rules out that LLMs must not submit or edit issues or PRs, so I post in the browser after running `check_voice.py`. I have not changed the playbook yet;  The main thing we need to fix is adding a clear rule for what to do when CI checks are waiting for someone to approve them.
 
 ---
 
@@ -204,7 +204,7 @@ Deviations: none yet.
 - Tool: plan-check, with the wild scope, run on `plan.md` and `plan-comment.md` in my CTSM clone.
 - What it produced: one run, verdict accept, with all six checks passing (diagnosis-grounded, scope-bounded, executable-by-stranger, test-plan-observable, honest-about-unknowns, comms-thread-aware). It named test-plan-observable as the weakest pass, because the plan's tests fail before the change but the plan does not re-run my repro greps with an expected after-output. It reported no voice-guide rule broken.
 - Difficulties: plan-check expects the repro evidence to be my posted repro comment, but this unit says not to post the repro, so there was nothing posted to read it against and it graded the plan against what plan.md says about the repro. My procedure.md is silent about that case. The leftovers commit (the docstring and error message in `single_point_case.py`) is only loosely the issue's ask and ekluzek has not confirmed it, so the scope pass depends on keeping it a separate commit I can drop.
-- What changed: I have not changed the plan to add the repro re-run it flagged yet, and I plan to add it to `test_evidence.md`.
+- What changed: I did not change the plan, but I put the repro re-run it flagged into `test_evidence.md`: the same greps run again after the fix, next to the "before" output.
 
 ---
 
@@ -227,6 +227,10 @@ The repo's checks, from my ship manifest, in the `ctsm_pylib` conda environment:
 
 ## Implementation Notes
 
+**2026-11-05 and 2026-11-06**
+
+Read the code and the issue history before building anything. Searching for the names in the issue found nothing useful, so I searched for the values and read `git log` and PR #1461, and learned that the PFT constants had already moved to `pft_utils.py` in June 2025 and only `MONTHS_PER_YEAR` was missing. I wrote `CLAUDE.local.md` with the repo's rules and ekluzek's pointer to PR #4286, and wrote `repro-draft.md` with the real command output. On 2026-11-06 I posted my scope and file-location question on #1621 in the browser and ran `check_voice.py` on it afterward, and it passed. repro-check rejected my report once for claims without quoted output, and I fixed that by pasting the output.
+
 **2026-11-07**
 
 Set up the CTSM test environment so I could run the project's checks. The first `conda env create` was killed while solving ("Killed" with no message); `dmesg` showed the kernel's out-of-memory killer, because WSL has 3.8 GB of RAM. A second attempt with mamba left a half-built environment (black, pylint, netCDF4 and xarray were missing), so I rebuilt it with `./py_env_create -m -y -o`. The first unit-test run then had 35 failures. The cause was not my code: 54 of the 55 test input `.nc` files were Git LFS pointer files because `git-lfs` was not installed. After `git lfs pull`, all 677 tests passed. Wrote the ship manifest (unit tests, black, pylint, each checked in a fresh terminal) and the plan, which plan-check accepted.
@@ -234,6 +238,10 @@ Set up the CTSM test environment so I could run the project's checks. The first 
 **2026-11-08**
 
 Fast-forwarded `constants-module` to upstream `b4b-dev` (0efa002a5, 31 commits ahead) and re-checked that the lines in my plan had not moved. ekluzek had not answered my question about where `MONTHS_PER_YEAR` should live, so I went ahead with my proposed location, `python/ctsm/constants.py`, and said so in the plan. Built it as three commits, writing each test first and running it to see it fail: the module and its test, the three `range(1, 13)` replacements, and the docstring and `--dompft` error fix, kept separate so it can be dropped. black reformatted one long line in `year_months()`; I used `range(1, MONTHS_PER_YEAR + 1)` as planned. One planned test turned out not to fail before the change (`NOLEAP_DAYS` has 12 entries either way), so I kept it as a consistency guard and said so in `test_evidence.md` instead of calling it a before/after test. Because of CTSM's AI rule (PR #4286), I decided that I commit and open the PR myself and review the whole diff first; the three commits Claude made were undone with a soft reset so I could re-make them. No deviation from the plan.
+
+**2026-11-09**
+
+Committed the three commits myself, made a local `b4b-dev` branch because the ship-gate needs one, and ran the gate. The first stop was the missing `b4b-dev`; the second was pr-precheck failing to fetch the #1621 thread because `gh issue view` fails on CTSM with my `gh` 2.45.0, so I patched `fetch_issue()` in my copy of the gate to use `--json`, and the gate then passed. I fixed "Fixes to #1621" to "Fixes #1621" and updated my AI disclosure, then opened PR #4310 in the browser from `michellejtan:constants-module` into `ESCOMP/CTSM:b4b-dev`. Afterward I found that its three CI workflows were `action_required`, waiting for a maintainer to approve them. I then installed the PR monitor, wrote my playbook, and ran it once; it drafted a wait note and I sent nothing.
 
 **Toolkit**
 
@@ -248,11 +256,11 @@ Fast-forwarded `constants-module` to upstream `b4b-dev` (0efa002a5, 31 commits a
 
 **PR Link:** https://github.com/ESCOMP/CTSM/pull/4310
 
-**PR Description:** The PR is "Add MONTHS_PER_YEAR constant and use it in cplhist_monthly_clim", from `michellejtan:constants-module` into `ESCOMP/CTSM:b4b-dev`, with three commits and six files (+86, -6). It adds `python/ctsm/constants.py` with `MONTHS_PER_YEAR`, replaces the three `range(1, 13)` month loops in `cplhist_monthly_clim.py` with it, and, in a separate commit that is easy to drop, makes a docstring and the `--dompft` error in `single_point_case.py` use the existing PFT constants (the error now says "between 0 and 78"). The description says what I did not change (`pft_utils.py`, the `"NETCDF4_CLASSIC"` string, `NOLEAP_DAYS`, `run_tower.py`), says I asked on #1621 where `MONTHS_PER_YEAR` should live and got no answer, and quotes the before and after greps. It lists two new tests that fail first and a third consistency test that does not, 680 unit tests passing, black and pylint clean, and the skipped system tests with the reason (NCO is not installed). Its AI disclosure says Claude Code helped explore the code and wrote the first version of the code, and tests, and that I review the diff and ran the checks CI runs myself. It says "Fixes #1621".
+**PR Description:** The PR is "Add MONTHS_PER_YEAR constant and use it in cplhist_monthly_clim", from `michellejtan:constants-module` into `ESCOMP/CTSM:b4b-dev`, with three commits and six files (+86, -6). It adds `python/ctsm/constants.py` with `MONTHS_PER_YEAR`, replaces the three `range(1, 13)` month loops in `cplhist_monthly_clim.py` with it, and, in a separate commit that is easy to drop, makes a docstring and the `--dompft` error in `single_point_case.py` use the existing PFT constants (the error now says "between 0 and 78"). The description says what I did not change (`pft_utils.py`, the `"NETCDF4_CLASSIC"` string, `NOLEAP_DAYS`, `run_tower.py`), says I asked on #1621 where `MONTHS_PER_YEAR` should live and got no answer, and quotes the before and after greps. It lists two new tests that fail first and a third consistency test that does not, 680 unit tests passing, black and pylint clean, and the skipped system tests with the reason (NCO is not installed). Its AI disclosure says Claude Code helped explore the codebase and the issue history and draft the code and tests, and that I read the diff, made edits where needed, and ran the checks CI runs myself. It says "Fixes #1621".
 
 **Maintainer Feedback:**
 
-- 2026-11-09: none yet. I opened the PR on this date. When I checked, nobody had commented or been asked to review, and GitHub showed no CI runs for the commit yet, so I do not know whether CI is waiting for a maintainer to approve it.
+- 2026-11-09: none yet. I opened the PR on this date. When I checked later that day, nobody had commented or been asked to review, and GitHub showed three CI workflows ("Run Python tests", "Check that XML files are well-formed", "git-fleximod test") as `action_required`, which means a maintainer has to approve their run for a first-time contributor, so no CI result exists yet. My playbook says to wait 14 quiet days before one nudge, so I have not nudged.
 
 **Status:** Awaiting review
 
@@ -269,25 +277,32 @@ Fast-forwarded `constants-module` to upstream `b4b-dev` (0efa002a5, 31 commits a
 
 **Technical Skills Gained**
 
-[What you learned technically, named concretely.]
+**1. Checking whether an old issue is still true.** An issue is like a note someone left on a to-do list. This one was written almost five years ago, so I could not trust it. I learned three ways to check. First, I used `git log` on one file, `pft_utils.py`, to see who changed it and when. That showed a developer named Sam Rabin had already moved the shared constants into that file in June 2025. Second, I read the commits that moved and renamed them (602fe61fb and 8ca6e4556), which showed the old names and the new names. Third, I read the old pull request discussion (#1461) where the idea first came up, which explained why the issue was written. Together these told me most of the work was already done, so I did not build something that already existed.
+
+**2. Writing a test first.** A test is a small program that checks that other code does what it should. I learned to write the test before I fix the code, and to run it and watch it fail. If a test fails first and then passes after my fix, I know it really notices my change. Mine failed for two clear reasons. One said `ImportError`, which is Python saying "I cannot find the file you asked for," because my new file did not exist yet. The other said the error message should say "between 0 and" but really said "between 1 and 78," because the wording was still wrong. After I made the changes, both tests passed.
+
+**3. How CTSM checks code.** Before CTSM accepts a change, it runs three checks. Unit tests are many small tests. Black checks that all the code is formatted the same way. Pylint looks for mistakes and messy code. They run inside a "conda environment," which is like a sealed box holding the exact versions of the tools CTSM needs, so everyone gets the same results. My unit tests went from 677 passing to 680, because I added three tests.
+
+**4. Fixing problems on my own computer.** When building my environment suddenly said "Killed," I learned to look at the system log with `dmesg`. It showed the computer had run out of memory, and Linux stopped the program to protect itself. A second problem was that 35 tests failed even though my code was fine. The cause was Git LFS, a tool that keeps big files outside normal git. Without it installed, the data files were only small text "pointers" that say where the real files are, so the tests tried to read plain text as data and failed. After I installed git-lfs and pulled the real files, all the tests passed.
+
+**5. Working from a fork.** I cannot change CTSM's code directly. Instead I made my own copy on GitHub, called a fork, and made a branch in it. I added the original project as a second remote named `upstream`, so I could always get its newest changes. Then I opened a pull request, which is a request to merge my branch into `b4b-dev`, the branch the CTSM maintainers asked me to use.
+
+**6. Using GitHub's command-line tool carefully.** The command `gh issue view` failed on CTSM with an error about "Projects (classic)," a GitHub feature that has been removed. I learned that asking for specific fields with `gh issue view --json ...` works, because it does not ask for the removed field. I used the same idea to patch my ship-gate so it could read the issue.
 
 **Challenges Overcome**
 
-[What was hard and how you solved it; point at the real events, the
-Toolkit blocks above are full of them.]
+The hardest part was that the issue was almost five years old and most of it was already done, which I only found by searching for values and reading history instead of names; I then asked ekluzek about scope and kept my plan small and droppable instead of waiting. Getting CTSM's checks to run took a day: conda was killed for lack of memory, I rebuilt the environment with mamba, and 35 tests failed until I installed git-lfs and pulled the real input files. The ship-gate failed on CTSM because of an old `gh`, so I patched my copy of its `fetch_issue()`. I also had to follow CTSM's rule that LLMs must not post or open PRs, which conflicted with the course steps, so I drafted with Claude but posted and opened everything myself.
 
 **What I'd Do Differently Next Time**
 
-[Reflection on your process.]
+I would read the whole issue thread, the repo's AI policy, and the code's history before I claim an issue, because my first claim described work that no longer existed. I would set up the test environment and run the checks on an unchanged branch first, so the memory and git-lfs problems show up before I need them. I would run `check_voice.py` on a comment before I post it in the browser, not after. And I would check what a tool says against the source (for example, the monitor's "1 check pending" against GitHub's `action_required`) before I rely on it.
 
 ---
 
 ## Resources Used
 
-[What actually helped, not a reading list. List things this story
-already shows you using: the doc you followed to set the environment
-up, the thread that explained the bug, the person who answered you.
-One real entry beats ten plausible ones.]
-
-- [Link to documentation that helped]
-- [Discussion, issue, or post that helped]
+- CTSM's `CONTRIBUTING.md` (https://github.com/ESCOMP/CTSM/blob/master/CONTRIBUTING.md) and its CI workflow `.github/workflows/python-tests.yml`, which told me which checks to run (unit tests, black, pylint).
+- ekluzek's reply on the issue (https://github.com/ESCOMP/CTSM/issues/1621#issuecomment-6550957028), which told me to base my work on `b4b-dev` and to follow PR #4286 for AI use.
+- CTSM PR #4286 (https://github.com/ESCOMP/CTSM/pull/4286), the draft AI rules (humans must understand what they submit; LLMs must not submit or edit issues or PRs), which changed how I posted.
+- The discussion on CTSM PR #1461 (https://github.com/ESCOMP/CTSM/pull/1461#discussion_r794988676), where ekluzek explains why #1621 was opened.
+- `python/conda_env_ctsm_py.yml` and the repo's `py_env_create` script, which I used to build the `ctsm_pylib` environment.
